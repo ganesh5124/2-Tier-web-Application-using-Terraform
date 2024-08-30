@@ -65,3 +65,9 @@ resource "aws_autoscaling_notification" "web-asg-notify" {
 resource "aws_sns_topic" "web-top" {
   name = "web-top"
 }
+
+resource "aws_sns_topic_subscription" "web-topic-sub" {
+  topic_arn = aws_sns_topic.web-top.arn
+  protocol = "email"
+  endpoint = "pvgkumar2001@gmail.com"
+}
