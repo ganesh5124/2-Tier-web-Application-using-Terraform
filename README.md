@@ -10,5 +10,4 @@ Step 3. Create Subnets
     but im creating 4 subnets 2 public 2 private 
 Step 4. Create public Route Tabels
     after 
-# 2-Tier-web-Application-using-Terraform
-# 2-Tier-web-Application-using-Terraform
+
