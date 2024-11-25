@@ -1,0 +1,58 @@
+stages:
+  - validate
+  - plan
+  - apply
+
+# Cache Terraform plugins and modules to speed up pipeline execution
+cache:
+  key: ${CI_PROJECT_ID}
+  paths:
+    - .terraform/
+
+variables:
+  TF_VERSION: "1.5.5"  # Specify your Terraform version here
+  TF_IN_AUTOMATION: "true"
+
+# Validate stage - Checks for syntax errors in Terraform code
+validate:
+  image: hashicorp/terraform:${TF_VERSION}
+  stage: validate
+  script:
+    - terraform init -backend=false  # Skip backend for validation
+    - terraform validate
+  only:
+    - branches
+  except:
+    - main
+
+# Plan stage - Creates a Terraform execution plan
+plan:
+  image: hashicorp/terraform:${TF_VERSION}
+  stage: plan
+  before_script:
+    - terraform init
+  script:
+    - terraform plan -out=tfplan
+  artifacts:
+    paths:
+      - tfplan
+  only:
+    - branches
+  except:
+    - main
+
+# Apply stage - Applies the Terraform plan (Manual trigger)
+apply:
+  image: hashicorp/terraform:${TF_VERSION}
+  stage: apply
+  before_script:
+    - terraform init
+  script:
+    - terraform apply -input=false -auto-approve tfplan
+  dependencies:
+    - plan
+  only:
+    - main
+  when: manual
+  environment:
+    name: production
